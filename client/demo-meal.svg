@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <radialGradient id="table" cx="50%" cy="40%" r="80%"><stop offset="0" stop-color="#c8a27a"/><stop offset="1" stop-color="#8a6240"/></radialGradient>
+    <radialGradient id="plate" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe3e6"/></radialGradient>
+    <radialGradient id="dal" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#f7c948"/><stop offset="1" stop-color="#d9930d"/></radialGradient>
+    <radialGradient id="bowl" cx="45%" cy="35%" r="65%"><stop offset="0" stop-color="#e9edf0"/><stop offset="1" stop-color="#9aa5ad"/></radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#table)"/>
+  <ellipse cx="400" cy="310" rx="300" ry="250" fill="#000" opacity=".18"/>
+  <circle cx="400" cy="300" r="270" fill="url(#plate)"/>
+  <circle cx="400" cy="300" r="225" fill="none" stroke="#cfd5da" stroke-width="4"/>
+  <!-- rice -->
+  <g fill="#fbfaf4" stroke="#e8e4d4" stroke-width="2">
+    <ellipse cx="300" cy="330" rx="120" ry="95"/>
+  </g>
+  <g fill="#ffffff" opacity=".9">
+    <ellipse cx="260" cy="300" rx="9" ry="4" transform="rotate(20 260 300)"/><ellipse cx="290" cy="320" rx="9" ry="4" transform="rotate(-30 290 320)"/>
+    <ellipse cx="330" cy="290" rx="9" ry="4" transform="rotate(60 330 290)"/><ellipse cx="320" cy="350" rx="9" ry="4"/>
+    <ellipse cx="270" cy="360" rx="9" ry="4" transform="rotate(45 270 360)"/><ellipse cx="350" cy="330" rx="9" ry="4" transform="rotate(-60 350 330)"/>
+    <ellipse cx="240" cy="335" rx="9" ry="4" transform="rotate(10 240 335)"/><ellipse cx="300" cy="385" rx="9" ry="4" transform="rotate(-15 300 385)"/>
+  </g>
+  <!-- dal bowl -->
+  <circle cx="500" cy="230" r="105" fill="url(#bowl)"/>
+  <circle cx="500" cy="230" r="85" fill="url(#dal)"/>
+  <g fill="#7a4b12" opacity=".7"><circle cx="480" cy="210" r="5"/><circle cx="520" cy="240" r="4"/><circle cx="495" cy="260" r="5"/><circle cx="530" cy="205" r="4"/></g>
+  <g fill="#2f8a3b"><path d="M470 240c10-14 26-14 30 0-12 6-22 6-30 0z"/><path d="M515 220c8-12 22-12 26 0-10 5-18 5-26 0z"/></g>
+  <!-- salad -->
+  <g>
+    <circle cx="515" cy="410" r="38" fill="#e8483f"/><circle cx="515" cy="410" r="28" fill="#f26b5e"/>
+    <circle cx="570" cy="380" r="34" fill="#9fd36b" stroke="#4f8f2a" stroke-width="5"/><circle cx="570" cy="380" r="14" fill="#cfe9a8"/>
+    <circle cx="460" cy="440" r="32" fill="#9fd36b" stroke="#4f8f2a" stroke-width="5"/><circle cx="460" cy="440" r="13" fill="#cfe9a8"/>
+    <path d="M590 440c30-30 70-10 60 20-30 10-50 0-60-20z" fill="#3fa34d"/>
+    <ellipse cx="560" cy="460" rx="26" ry="9" fill="#b03a8a" transform="rotate(-20 560 460)"/>
+  </g>
+</svg>
