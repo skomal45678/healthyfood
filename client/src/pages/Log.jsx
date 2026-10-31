@@ -52,19 +52,22 @@ export default function Log() {
 
   return (
     <div>
-      <PageHeader title="Food log" subtitle="Type what you ate in plain words: AI works out the nutrition." />
+      <PageHeader icon={NotebookPen} title="Food log" subtitle="Type what you ate in plain words: AI works out the nutrition." />
 
-      <div className="grid gap-5 lg:grid-cols-2">
-        <div className="card space-y-3">
-          <h2 className="font-semibold">Log a meal</h2>
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        <div className="card space-y-4 lg:sticky lg:top-8">
+          <div>
+            <h2 className="section-title">Log a meal</h2>
+            <p className="muted text-sm">Describe it like you would to a friend.</p>
+          </div>
           <textarea
-            className="input min-h-24"
+            className="input min-h-28 resize-y"
             placeholder="e.g. 1 masala dosa with sambar and coconut chutney, filter coffee with sugar"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <div className="flex flex-wrap gap-2">
-            <Button onClick={parse} loading={loading} disabled={!text.trim()}>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button className="sm:flex-1" onClick={parse} loading={loading} disabled={!text.trim()}>
               <Sparkles className="h-4 w-4" /> Calculate nutrition
             </Button>
             <button
@@ -78,7 +81,7 @@ export default function Log() {
             </button>
           </div>
           {items.length > 0 && (
-            <div className="space-y-3 border-t border-stone-200 pt-3 dark:border-stone-800">
+            <div className="animate-fade-in space-y-3 border-t border-slate-100 pt-4 dark:border-slate-800">
               <FoodItemsEditor items={items} onChange={setItems} />
               <AllergyAlert items={items} />
               <SaveToLog key={formKey} items={items.filter((i) => i.name.trim())} source={source} onSaved={reset} />
@@ -88,21 +91,22 @@ export default function Log() {
 
         <div className="space-y-4">
           <div className="card">
-            <h2 className="mb-2 font-semibold">Last 7 days</h2>
-            <ul className="divide-y divide-stone-100 text-sm dark:divide-stone-800">
+            <h2 className="section-title mb-3">Last 7 days</h2>
+            <ul className="space-y-1 text-sm">
               {history.map((h) => (
                 <li key={h.date}>
                   <button
                     onClick={() => setDate(h.date)}
-                    className={`flex w-full items-center justify-between gap-2 rounded-lg px-2 py-2 text-left hover:bg-stone-50 dark:hover:bg-stone-800 ${
-                      h.date === date ? 'bg-brand-50 dark:bg-brand-700/10' : ''
+                    aria-pressed={h.date === date}
+                    className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition hover:bg-slate-50 dark:hover:bg-slate-800 ${
+                      h.date === date ? 'bg-brand-50 ring-1 ring-brand-200 dark:bg-brand-500/10 dark:ring-brand-500/20' : ''
                     }`}
                   >
                     <span className="w-24 font-medium">{prettyDate(h.date)}</span>
                     <span className="flex-1">
-                      <span className="block h-1.5 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-800">
+                      <span className="block h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                         <span
-                          className={`block h-full rounded-full ${h.totals.kcal > (targets?.kcal || 0) * 1.05 ? 'bg-red-500' : 'bg-brand-500'}`}
+                          className={`block h-full rounded-full ${h.totals.kcal > (targets?.kcal || 0) * 1.05 ? 'bg-red-500' : 'bg-gradient-to-r from-brand-500 to-accent-500'}`}
                           style={{ width: `${Math.min(100, (h.totals.kcal / (targets?.kcal || 1)) * 100)}%` }}
                         />
                       </span>
@@ -115,26 +119,27 @@ export default function Log() {
           </div>
 
           <div>
-            <h2 className="mb-2 font-semibold">
-              {prettyDate(date)} · <MacroLine t={sumLogs(logs)} className="text-sm font-normal" />
-            </h2>
+            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+              <h2 className="section-title">{prettyDate(date)}</h2>
+              <MacroLine t={sumLogs(logs)} className="text-sm" />
+            </div>
             {!logs.length ? (
               <EmptyState icon={NotebookPen} title="Nothing logged" text="Log a meal, scan a photo or tick off a planned meal." />
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {logs.map((log) => {
                   const Icon = SOURCE_ICON[log.source] || NotebookPen;
                   return (
-                    <div key={log.id} className="card flex items-start gap-3 !p-3">
+                    <div key={log.id} className="card flex animate-fade-in items-start gap-3.5 !p-3.5">
                       {log.thumb ? (
-                        <img src={log.thumb} alt="" className="h-12 w-12 rounded-lg object-cover" />
+                        <img src={log.thumb} alt="" className="h-14 w-14 rounded-xl object-cover" />
                       ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800">
-                          <Icon className="h-5 w-5 text-stone-400" />
+                        <div className="icon-tile h-14 w-14">
+                          <Icon className="h-5 w-5" />
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium">
+                        <p className="font-semibold">
                           {log.mealName}
                           <span className="muted text-xs font-normal">
                             {' '}
@@ -144,7 +149,11 @@ export default function Log() {
                         <p className="muted truncate text-sm">{log.items.map((i) => i.name).join(', ')}</p>
                         <MacroLine t={sumItems(log.items)} className="text-xs" />
                       </div>
-                      <button className="icon-btn" onClick={() => removeLog(date, log.id)} aria-label="Delete log entry">
+                      <button
+                        className="icon-btn hover:!bg-red-50 hover:!text-red-600 dark:hover:!bg-red-500/10"
+                        onClick={() => removeLog(date, log.id)}
+                        aria-label="Delete log entry"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>

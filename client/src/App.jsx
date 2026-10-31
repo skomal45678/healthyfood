@@ -12,9 +12,27 @@ import Coach from './pages/Coach';
 import Grocery from './pages/Grocery';
 import Settings from './pages/Settings';
 import Demo from './pages/Demo';
+import { Skeleton } from './components/ui';
 
 // Recharts is large, so the charts page loads on demand.
 const Progress = lazy(() => import('./pages/Progress'));
+
+function ProgressSkeleton() {
+  return (
+    <div className="space-y-5" aria-label="Loading">
+      <Skeleton className="h-9 w-48" />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-28" />
+        ))}
+      </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Skeleton className="h-72" />
+        <Skeleton className="h-72" />
+      </div>
+    </div>
+  );
+}
 
 function useTheme() {
   const theme = useApp((s) => s.settings.theme);
@@ -43,7 +61,14 @@ export default function App() {
 
   return (
     <>
-      <Toaster position="top-center" toastOptions={{ className: 'dark:!bg-stone-800 dark:!text-stone-100', duration: 3500 }} />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          className: '!rounded-2xl !px-4 !py-3 !text-sm !shadow-lift dark:!bg-slate-800 dark:!text-slate-100',
+          duration: 3500,
+          success: { iconTheme: { primary: '#10b981', secondary: '#fff' } },
+        }}
+      />
       {needsOnboarding ? (
         <Navigate to="/onboarding" replace />
       ) : (
@@ -56,7 +81,7 @@ export default function App() {
             <Route path="/log" element={<Log />} />
             <Route path="/coach" element={<Coach />} />
             <Route path="/grocery" element={<Grocery />} />
-            <Route path="/progress" element={<Suspense fallback={null}><Progress /></Suspense>} />
+            <Route path="/progress" element={<Suspense fallback={<ProgressSkeleton />}><Progress /></Suspense>} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/demo" element={<Demo />} />
           </Route>

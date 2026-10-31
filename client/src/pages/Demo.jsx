@@ -38,16 +38,17 @@ export default function Demo() {
   return (
     <div className="space-y-5">
       <PageHeader
+        icon={WifiOff}
         title="Offline demo"
         subtitle="Present HealthyFood with no internet connection and no API key."
       />
 
-      <div className="card flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="rounded-full bg-violet-100 p-3 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300">
+      <div className="relative flex flex-col gap-5 overflow-hidden rounded-[1.75rem] border border-violet-200 bg-gradient-to-br from-violet-50 to-fuchsia-50 p-5 shadow-soft sm:flex-row sm:items-center sm:p-6 dark:border-violet-500/20 dark:from-violet-500/10 dark:to-fuchsia-500/5">
+        <div className="self-start rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 p-3.5 text-white shadow-[0_8px_24px_-6px_rgb(139_92_246/0.5)]">
           <WifiOff className="h-7 w-7" />
         </div>
         <div className="flex-1 text-sm">
-          <p className="font-semibold">{demoMode ? 'Demo mode is ON' : 'How it works'}</p>
+          <p className="text-base font-semibold">{demoMode ? 'Demo mode is ON' : 'How it works'}</p>
           <p className="muted">
             Demo mode loads a sample user (Asha: eggetarian, losing weight, allergic to peanuts) with a meal plan and two
             weeks of history. Every AI feature answers instantly from a built-in engine: canned plans scaled to her
@@ -62,27 +63,27 @@ export default function Demo() {
             <LogOut className="h-4 w-4" /> Exit demo
           </button>
         ) : (
-          <button className="btn-primary shrink-0 !bg-violet-600 hover:!bg-violet-700" onClick={start}>
+          <button className="btn shrink-0 bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-[0_8px_24px_-6px_rgb(139_92_246/0.5)] hover:brightness-105" onClick={start}>
             <PlayCircle className="h-4 w-4" /> Start offline demo
           </button>
         )}
       </div>
 
       <div className="card">
-        <h2 className="mb-3 font-semibold">Demo script (about 3 minutes)</h2>
-        <ol className="space-y-2">
+        <h2 className="section-title mb-4">Demo script (about 3 minutes)</h2>
+        <ol className="relative space-y-4 before:absolute before:bottom-3 before:left-[0.9rem] before:top-3 before:w-px before:bg-slate-200 dark:before:bg-slate-800">
           {STEPS.map((s, i) => (
-            <li key={i} className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700 dark:bg-brand-700/20 dark:text-brand-400">
+            <li key={i} className="relative flex gap-3.5">
+              <span className="z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-accent-600 text-xs font-bold text-white ring-4 ring-white dark:ring-slate-900">
                 {i + 1}
               </span>
-              <div className="text-sm">
+              <div className="pt-0.5 text-sm">
                 {demoMode ? (
-                  <Link to={s.to} className="font-medium text-brand-700 hover:underline dark:text-brand-400">
+                  <Link to={s.to} className="font-semibold text-brand-700 hover:underline dark:text-brand-400">
                     {s.title}
                   </Link>
                 ) : (
-                  <span className="font-medium">{s.title}</span>
+                  <span className="font-semibold">{s.title}</span>
                 )}
                 <p className="muted">{s.text}</p>
               </div>

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { Flame, Scale, Target, TrendingDown, TrendingUp } from 'lucide-react';
+import { Flame, LineChart as LineChartIcon, Scale, Target, TrendingDown, TrendingUp } from 'lucide-react';
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   BarChart,
   Bar,
   XAxis,
@@ -19,15 +19,27 @@ import { sumLogs, bmi, r1 } from '../lib/nutrition';
 import { addDays, dateKey, fmt } from '../lib/utils';
 import { PageHeader } from '../components/ui';
 
-const tooltipStyle = { borderRadius: 12, border: '1px solid #e7e5e4', fontSize: 12 };
+const tooltipStyle = {
+  borderRadius: 14,
+  border: '1px solid rgb(148 163 184 / 0.25)',
+  background: 'rgb(255 255 255 / 0.95)',
+  boxShadow: '0 12px 32px -8px rgb(15 23 42 / 0.2)',
+  color: '#0f172a',
+  fontSize: 12,
+};
+const axisTick = { fontSize: 11, fill: '#94a3b8' };
+const GRID = 'rgb(148 163 184 / 0.2)';
 
 function Stat({ icon: Icon, label, value, sub }) {
   return (
     <div className="card">
-      <p className="muted flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide">
-        <Icon className="h-4 w-4" /> {label}
-      </p>
-      <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="muted text-xs font-medium uppercase tracking-wide">{label}</p>
+        <span className="icon-tile h-8 w-8">
+          <Icon className="h-4 w-4" />
+        </span>
+      </div>
+      <p className="mt-2 text-2xl font-bold tracking-tight tabular-nums">{value}</p>
       {sub && <p className="muted text-xs">{sub}</p>}
     </div>
   );
@@ -71,7 +83,7 @@ export default function Progress() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title="Progress" subtitle="Weight trend, calorie history and streaks." />
+      <PageHeader icon={LineChartIcon} title="Progress" subtitle="Weight trend, calorie history and streaks." />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat icon={Flame} label="Logging streak" value={`${streak} day${streak === 1 ? '' : 's'}`} />
@@ -85,15 +97,15 @@ export default function Progress() {
         />
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         <div className="card">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="flex items-center gap-2 font-semibold">
+            <h2 className="section-title flex items-center gap-2">
               <Scale className="h-5 w-5 text-brand-600" /> Weight
             </h2>
             <form onSubmit={save} className="flex gap-2">
               <input
-                className="input !w-28 !py-1.5"
+                className="input !w-28"
                 type="number"
                 step="0.1"
                 placeholder="kg today"
@@ -101,35 +113,55 @@ export default function Progress() {
                 onChange={(e) => setKg(e.target.value)}
                 aria-label="Today's weight in kg"
               />
-              <button className="btn-primary !py-1.5">Log</button>
+              <button className="btn-primary">Log</button>
             </form>
           </div>
           {weights.length < 2 ? (
             <p className="muted py-10 text-center text-sm">Log your weight on a few different days to see a trend.</p>
           ) : (
             <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={weights.map((w) => ({ date: w.date.slice(5), kg: w.kg }))} margin={{ left: -20, right: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                <YAxis domain={['dataMin - 1', 'dataMax + 1']} tick={{ fontSize: 11 }} />
+              <AreaChart data={weights.map((w) => ({ date: w.date.slice(5), kg: w.kg }))} margin={{ left: -20, right: 8, top: 8 }}>
+                <defs>
+                  <linearGradient id="weightFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+                <XAxis dataKey="date" tick={axisTick} axisLine={false} tickLine={false} />
+                <YAxis domain={['dataMin - 1', 'dataMax + 1']} tick={axisTick} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={tooltipStyle} />
-                {profile?.targetWeightKg && <ReferenceLine y={profile.targetWeightKg} stroke="#16a34a" strokeDasharray="4 4" />}
-                <Line type="monotone" dataKey="kg" stroke="#16a34a" strokeWidth={2.5} dot={{ r: 3 }} />
-              </LineChart>
+                {profile?.targetWeightKg && <ReferenceLine y={profile.targetWeightKg} stroke="#0d9488" strokeDasharray="4 4" />}
+                <Area
+                  type="monotone"
+                  dataKey="kg"
+                  stroke="#059669"
+                  strokeWidth={2.5}
+                  fill="url(#weightFill)"
+                  dot={{ r: 3, fill: '#059669', strokeWidth: 0 }}
+                  activeDot={{ r: 5 }}
+                />
+              </AreaChart>
             </ResponsiveContainer>
           )}
         </div>
 
         <div className="card">
-          <h2 className="mb-3 font-semibold">Calories, last 14 days</h2>
+          <h2 className="section-title mb-3">Calories, last 14 days</h2>
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={daily} margin={{ left: -20, right: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} interval={1} />
-              <YAxis tick={{ fontSize: 11 }} />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(120,113,108,0.1)' }} />
-              {targets && <ReferenceLine y={targets.kcal} stroke="#ef4444" strokeDasharray="4 4" />}
-              <Bar dataKey="kcal" fill="#22c55e" radius={[6, 6, 0, 0]} />
+            <BarChart data={daily} margin={{ left: -20, right: 8, top: 8 }}>
+              <defs>
+                <linearGradient id="kcalFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#34d399" />
+                  <stop offset="100%" stopColor="#0d9488" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={GRID} vertical={false} />
+              <XAxis dataKey="date" tick={axisTick} interval={1} axisLine={false} tickLine={false} />
+              <YAxis tick={axisTick} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgb(148 163 184 / 0.12)', radius: 8 }} />
+              {targets && <ReferenceLine y={targets.kcal} stroke="#f43f5e" strokeDasharray="4 4" />}
+              <Bar dataKey="kcal" fill="url(#kcalFill)" radius={[8, 8, 0, 0]} maxBarSize={28} />
             </BarChart>
           </ResponsiveContainer>
           <p className="muted mt-1 text-xs">Dashed line = your daily target.</p>

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Camera, ImageUp, Sparkles, RotateCcw, HeartPulse } from 'lucide-react';
+import { Camera, ImageUp, Sparkles, RotateCcw, HeartPulse, Sun, Hand, Droplet, PencilLine, ScanLine } from 'lucide-react';
 import { api } from '../lib/api';
 import { compressImage } from '../lib/image';
 import { uid } from '../lib/utils';
@@ -8,6 +8,13 @@ import { useApp } from '../store/useApp';
 import { Button, PageHeader, Badge } from '../components/ui';
 import { FoodItemsEditor } from '../components/FoodItems';
 import { AllergyAlert, SaveToLog } from '../components/FoodDialogs';
+
+const TIPS = [
+  { icon: Sun, text: 'Shoot from above in good light with the whole plate visible.' },
+  { icon: Hand, text: 'Put a spoon or your hand in the shot for scale.' },
+  { icon: Droplet, text: "Add a hint about oil, ghee or sugar the camera can't see." },
+  { icon: PencilLine, text: 'You can edit every item before it’s logged.' },
+];
 
 export default function Scan() {
   const cameraRef = useRef(null);
@@ -67,7 +74,7 @@ export default function Scan() {
 
   return (
     <div>
-      <PageHeader title="Scan food" subtitle="Snap or upload a photo. A free vision model estimates the calories and macros." />
+      <PageHeader icon={ScanLine} title="Scan food" subtitle="Snap or upload a photo. A free vision model estimates the calories and macros." />
 
       <input ref={cameraRef} type="file" accept="image/*" capture="environment" hidden onChange={(e) => pick(e.target.files?.[0])} />
       <input ref={galleryRef} type="file" accept="image/*" hidden onChange={(e) => pick(e.target.files?.[0])} />
@@ -86,18 +93,21 @@ export default function Scan() {
                 setDragging(false);
                 pick(e.dataTransfer.files?.[0]);
               }}
-              className={`card flex flex-col items-center gap-4 border-2 border-dashed py-12 text-center ${
-                dragging ? 'border-brand-500 bg-brand-50 dark:bg-brand-700/10' : ''
+              className={`card flex flex-col items-center gap-5 !border-2 border-dashed px-5 py-12 text-center transition sm:py-16 ${
+                dragging ? '!border-brand-500 !bg-brand-50 scale-[1.01] dark:!bg-brand-500/10' : '!border-slate-300 dark:!border-slate-700'
               }`}
             >
-              <div className="rounded-full bg-brand-100 p-4 text-brand-700 dark:bg-brand-700/20 dark:text-brand-400">
-                <Camera className="h-8 w-8" />
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-brand-400 to-accent-400 opacity-40 blur-2xl" />
+                <div className="relative rounded-3xl bg-gradient-to-br from-brand-500 to-accent-600 p-5 text-white shadow-glow">
+                  <Camera className="h-9 w-9" />
+                </div>
               </div>
               <div>
-                <p className="font-semibold">Take a photo of your meal</p>
+                <p className="text-lg font-semibold">Take a photo of your meal</p>
                 <p className="muted text-sm">or drag &amp; drop an image here</p>
               </div>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex w-full flex-col justify-center gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
                 <button className="btn-primary" onClick={() => cameraRef.current.click()}>
                   <Camera className="h-4 w-4" /> Use camera
                 </button>
@@ -113,7 +123,14 @@ export default function Scan() {
             </div>
           ) : (
             <div className="card space-y-3">
-              <img src={image.dataUrl} alt="Your meal" className="max-h-96 w-full rounded-xl object-contain" />
+              <div className="relative overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-800">
+                <img src={image.dataUrl} alt="Your meal" className="max-h-96 w-full object-contain" />
+                {loading && (
+                  <div className="absolute inset-0 bg-brand-500/10" aria-hidden>
+                    <div className="absolute inset-x-0 h-1 animate-scan bg-gradient-to-r from-transparent via-brand-400 to-transparent shadow-[0_0_16px_4px_rgb(52_211_153/0.6)]" />
+                  </div>
+                )}
+              </div>
               <input
                 className="input"
                 placeholder="Optional hint, e.g. 'homemade, cooked in 1 tsp ghee'"
@@ -144,6 +161,22 @@ export default function Scan() {
                   <HeartPulse className="h-3.5 w-3.5" /> Health {Math.round(result.healthScore)}/10
                 </Badge>
               </div>
+              <div className="flex gap-1" aria-hidden>
+                {Array.from({ length: 10 }, (_, i) => (
+                  <span
+                    key={i}
+                    className={`h-1.5 flex-1 rounded-full ${
+                      i < Math.round(result.healthScore)
+                        ? result.healthScore >= 7
+                          ? 'bg-brand-500'
+                          : result.healthScore >= 4
+                            ? 'bg-amber-400'
+                            : 'bg-red-500'
+                        : 'bg-slate-200 dark:bg-slate-800'
+                    }`}
+                  />
+                ))}
+              </div>
               <p className="muted text-xs">Check the AI&apos;s guesses and fix names or portions before saving.</p>
               <FoodItemsEditor items={items} onChange={setItems} />
               <AllergyAlert items={items} />
@@ -158,13 +191,17 @@ export default function Scan() {
               {result.model && <p className="muted text-center text-xs">Analysed with {result.model}</p>}
             </div>
           ) : (
-            <div className="card muted space-y-2 text-sm">
-              <p className="font-semibold text-stone-700 dark:text-stone-200">Tips for better estimates</p>
-              <ul className="list-disc space-y-1 pl-5">
-                <li>Shoot from above in good light with the whole plate visible.</li>
-                <li>Put a spoon or your hand in the shot for scale.</li>
-                <li>Add a hint about oil, ghee or sugar the camera can&apos;t see.</li>
-                <li>You can edit every item before it&apos;s logged.</li>
+            <div className="card">
+              <p className="section-title mb-4">Tips for better estimates</p>
+              <ul className="space-y-3 text-sm">
+                {TIPS.map(({ icon: Icon, text }) => (
+                  <li key={text} className="flex items-start gap-3">
+                    <span className="icon-tile h-8 w-8">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="muted pt-1.5">{text}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           )}
