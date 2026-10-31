@@ -17,7 +17,7 @@ export function AllergyAlert({ items }) {
   const hits = findAllergens(items, allergies);
   if (!hits.length) return null;
   return (
-    <div className="flex gap-2 rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+    <div className="flex gap-2 rounded-2xl border border-red-200 bg-red-50 p-3.5 text-sm text-red-800 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
       <AlertTriangle className="h-5 w-5 shrink-0" />
       <span>
         <strong>Allergy warning:</strong> {hits.join(', ')}
@@ -85,7 +85,7 @@ export function AddFoodModal({ open, onClose, onAdd, title = 'Add food' }) {
         </>
       }
     >
-      <div className="mb-4 flex gap-1 rounded-xl bg-stone-100 p-1 text-sm dark:bg-stone-800">
+      <div className="mb-4 flex gap-1 rounded-xl bg-slate-100 p-1 text-sm dark:bg-slate-800">
         {[
           ['ai', 'Describe with AI'],
           ['manual', 'Enter manually'],
@@ -93,7 +93,7 @@ export function AddFoodModal({ open, onClose, onAdd, title = 'Add food' }) {
           <button
             key={k}
             onClick={() => (k === 'manual' ? startManual() : setTab('ai'))}
-            className={`flex-1 rounded-lg px-3 py-1.5 font-medium ${tab === k ? 'bg-white shadow-sm dark:bg-stone-900' : 'muted'}`}
+            className={`flex-1 rounded-lg px-3 py-1.5 font-medium ${tab === k ? 'bg-white shadow-soft dark:bg-slate-950' : 'muted'}`}
           >
             {label}
           </button>
@@ -153,7 +153,7 @@ export function SaveToLog({ items, source, thumb, dish, onSaved }) {
             <span className="flex items-center gap-3">
               Logged to {slot}.
               <button
-                className="btn-primary !px-2 !py-1"
+                className="btn-primary !min-h-8 !px-2 !py-1"
                 onClick={() => {
                   toast.dismiss(t.id);
                   navigate('/?adjust=1');
@@ -246,7 +246,7 @@ export function SwapModal({ open, onClose, item, mealName, onAccept }) {
       </p>
       <div className="mb-3 flex flex-wrap gap-2">
         {['Dairy-free', 'Vegan', 'Higher protein', 'Cheaper', 'No cooking'].map((chip) => (
-          <button key={chip} className="chip bg-stone-100 hover:bg-stone-200 dark:bg-stone-800" onClick={() => { setInstruction(chip); ask(chip); }}>
+          <button key={chip} className="chip !px-3 !py-1.5 bg-slate-100 text-slate-700 transition hover:bg-brand-100 hover:text-brand-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-brand-500/15" onClick={() => { setInstruction(chip); ask(chip); }}>
             {chip}
           </button>
         ))}
@@ -264,7 +264,7 @@ export function SwapModal({ open, onClose, item, mealName, onAccept }) {
         </Button>
       </div>
       {result && (
-        <div className="mt-4 rounded-xl border border-brand-200 bg-brand-50 p-3 dark:border-brand-700/40 dark:bg-brand-700/10">
+        <div className="mt-4 rounded-2xl border border-brand-200 bg-brand-50 p-4 dark:border-brand-700/40 dark:bg-brand-700/10">
           <p className="font-semibold">{result.item.name}</p>
           <ItemSummary item={result.item} />
           {result.reason && <p className="mt-2 text-sm">{result.reason}</p>}
@@ -450,7 +450,7 @@ export function AdjustDayModal({ open, onClose }) {
           {proposal.meals.map((m) => {
             const before = remainingMeals.find((o) => o.id === m.id);
             return (
-              <div key={m.id} className="rounded-xl border border-stone-200 p-3 dark:border-stone-800">
+              <div key={m.id} className="rounded-2xl border border-slate-200 p-3.5 dark:border-slate-800">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="font-semibold">{m.name}</h3>
                   <span className="text-sm tabular-nums">
