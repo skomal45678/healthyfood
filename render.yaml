@@ -1,0 +1,18 @@
+# Render Blueprint: one web service serves both the React app and the API.
+# Deploy: Render dashboard -> New -> Blueprint -> select this repo.
+services:
+  - type: web
+    name: healthyfood
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: RATE_LIMIT_PER_MIN
+        value: 60
+      # Optional: a shared demo key used when a visitor has not added their own.
+      - key: OPENROUTER_API_KEY
+        sync: false
